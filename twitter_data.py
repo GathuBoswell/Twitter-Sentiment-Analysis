@@ -24,11 +24,27 @@ class GetData(object):
             all_tweets.extend(new_tweets)
             oldest = all_tweets[-1].id - 1
             ### implement the status bar
-        with open(self._json_file, 'w') as file:
+        status_list = []
+        with open(self._json_file, 'w') as json_data:
             for status in all_tweets:
+                status_list.append(status._json)
                 # status._json converts tweepy status object to JSON serializable response data
-                json.dump(status._json, file, sort_keys=True, indent=4)
-        return self._json_file
+                #json.dump(status._json, json_data, sort_keys=True, indent=4)
+            json.dump(status_list, json_data)
+        return ''
+
+    def word_frequency(self):
+        import json
+        from pprint import pprint
+
+        tweet_list = []
+        with open(self._json_file, 'r') as tweet_data:
+            data = json.load(tweet_data)
+        tweet_list.append(data)
+        # print(len(data))
+        # pprint(data)
+        for item in data:
+            print (item['text'])
 
 def main():
     cons_key = "qrRMCNNtOtWlN7YPAwllY4C9p"
@@ -36,8 +52,8 @@ def main():
     access_key = "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d"
     access_secret = "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
     data = GetData(cons_key, cons_secret, access_key, access_secret)
-    tweets = data.get_tweets('@Boswellwanyoike')
-    print(tweets)
+    tweets = data.get_tweets('@allelachavo')
+    print(data.word_frequency())
 
 if __name__ == '__main__':main()
 
