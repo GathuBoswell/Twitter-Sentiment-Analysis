@@ -36,37 +36,38 @@ class GetData(object):
     def word_list(self):
         import json
         import re
+        from nltk.corpus import stopwords
 
+        cachedStopWords = stopwords.words("english")
         tweet_list = []
         with open(self._json_file, 'r') as tweet_data:
             data = json.load(tweet_data)
         tweet_list.extend(data)
         # print(len(tweet_list))
         # pprint(tweet_list)
-        unwanted_texts = re.compile('[@#."]')
+        unwanted_texts = re.compile('[@#-&()."]')
         words = []
         for status in tweet_list:
             for word in status['text'].split():
                 # create a regex to catch this class ['@#."']
                 #if word.startswith('#') or word.startswith('@') or word.startswith('http'):
-                if unwanted_texts.match(word) or word.startswith('http'):
+                if unwanted_texts.match(word) or word.startswith('http') or word.startswith('http'):
                     continue
                 else:
                     for word_members in (word.replace(':',' ').replace('.',' '
                                         ).replace('!',' ').replace('?',' '
-                                        ).replace('"', ' '
+                                        ).replace('"', ' ').replace('-',' '
                                         ).replace('/',' ').split()
-                                        ) or word.startswith('http'):
+                                        ):
                     # word_members = re.findall(r"[\w]+", word)
                     # words.extend(word_members)
-                        words.append(word_members)
+                        if (word_members not in cachedStopWords) and (word_members != 'RT'):
+                            words.append(str(word_members))
         return words
 
     def word_frequency(self):
         word_count = {}
         words = self.word_list()
-
-        word_count = {}
         for word in words:
             try:
                 word = int(word)
@@ -85,19 +86,43 @@ class GetData(object):
 
     def word_count_analysis(self):
         from operator import itemgetter
+
         word_count = self.word_frequency()
         sort = word_count.items()
-        return (sorted(sort, key=itemgetter(1)))
+        sorted_list =(sorted(sort, key=itemgetter(1)))
+        count_sum = sum(word_count.values())
+        count = -1
+        while count > -20:
+            word, value = sorted_list[count]
+            percent = (value/count_sum)*100
+            print(word, 'appears ', value, 'times and percentage is {:.2f}'.format(percent))
+            count += -1
+
+    def sentiment_analysis(self):
+        import json
+        from watson_developer_cloud import AlchemyLanguageV1
+        alchemyapi = AlchemyLanguageV1(api_key='0e1c5001c8047a3f0492469bf8449d40949f5d1f')
+
+        words_list = ' '.join(self.word_list())
+
+        response = alchemyapi.sentiment("text", words_list)
+        tweets_sentiment = response
+        emotion_response = alchemyapi.emotion(text=words_list)
+        return (response, emotion_response)
+
 
 def main():
+    from pprint import pprint
     cons_key = "qrRMCNNtOtWlN7YPAwllY4C9p"
     cons_secret = "WuA5sp6Do0Q3ohcyTztBjeF0Z8fRQaNFxJQzD0HAWXJpGEA46K"
     access_key = "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d"
     access_secret = "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
     data = GetData(cons_key, cons_secret, access_key, access_secret)
-    #tweets = data.get_tweets('@allelachavo')
+    #tweets = data.get_tweets('@realdonaldTrump')
     #print(data.word_frequency())
-    print(data.word_count_analysis())
+    #data.word_count_analysis()
+    for item in data.sentiment_analysis():
+        pprint(item)
 
 if __name__ == '__main__':main()
 
