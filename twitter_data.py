@@ -60,10 +60,34 @@ class GetData(object):
                     # word_members = re.findall(r"[\w]+", word)
                     # words.extend(word_members)
                         words.append(word_members)
-        print(words)
+        return words
 
-        def word_count(self):
-            pass
+    def word_frequency(self):
+        word_count = {}
+        words = self.word_list()
+
+        word_count = {}
+        for word in words:
+            try:
+                word = int(word)
+                try:
+                    if word_count[word]:
+                        word_count[word] += 1
+                except KeyError:
+                    word_count[word] = 1
+            except ValueError:
+                try:
+                    if word_count[word]:
+                        word_count[word] += 1
+                except KeyError:
+                    word_count[word] = 1
+        return word_count
+
+    def word_count_analysis(self):
+        from operator import itemgetter
+        word_count = self.word_frequency()
+        sort = word_count.items()
+        return (sorted(sort, key=itemgetter(1)))
 
 def main():
     cons_key = "qrRMCNNtOtWlN7YPAwllY4C9p"
@@ -72,7 +96,8 @@ def main():
     access_secret = "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
     data = GetData(cons_key, cons_secret, access_key, access_secret)
     #tweets = data.get_tweets('@allelachavo')
-    print(data.word_frequency())
+    #print(data.word_frequency())
+    print(data.word_count_analysis())
 
 if __name__ == '__main__':main()
 
