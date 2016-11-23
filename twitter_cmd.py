@@ -1,28 +1,104 @@
-from cmd import Cmd
+#!/usr/bin/env python
+"""
+Interactive Interface for the Twitter Sentiment Analysis App
 
-class TweetAnalyserCmd(Cmd):
-    def __init__(self, args):
-        super().__init__()
-        self.prompt = 'Tweet_Sentiment: >'
+Usage:
+    my_program fetch <username> <duration>
+    my_program wordfrequency
+    my_program savejson <filename>
+    my_program sentiment <all> <docsentiment> <emotion>
+    my_program (-i | --interactive)
+    my_program (-h | --help | --version)
+Options:
+    -i, --interactive  Interactive Mode
+    -h, --help  Show this screen and exit.
+"""
 
-    def help_introduction(self):
-        print('List of commands')
+import sys
+import cmd
+from docopt import docopt, DocoptExit
 
-    def do_fetch(self):
-        pass
+from twitter_data import GetData
 
-    def do_tojson(self):
-        pass
+user_data = {'cons_key': "qrRMCNNtOtWlN7YPAwllY4C9p",
+             'cons_secret': "WuA5sp6Do0Q3ohcyTztBjeF0Z8fRQaNFxJQzD0HAWXJpGEA46K",
+             'access_key': "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d",
+             'access_secret': "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
+             }
 
-    def do_wordcount(self):
-        pass
+cmd_render = GetData(user_data['cons_key'],
+                     user_data['cons_secret'],
+                     user_data['access_key'],
+                     user_data['access_secret'])
 
-    def do_sentiment(self):
-        pass
+def docopt_cmd(func):
+    """
+    This decorator is used to simplify the try/except block and pass the result
+    of the docopt parsing to the called action.
+    """
+    def fn(self, arg):
+        try:
+            opt = docopt(fn.__doc__, arg)
 
-    def do_quit(self):
-        pass
+        except DocoptExit as e:
+            # The DocoptExit is thrown when the args do not match.
+            # We print a message to the user and the usage block.
 
-if __name__ == '__main__':
-    prompt = TweetAnalyserCmd('')
-    prompt.cmdloop('Starting Tweet Sentiment Analyser')
+            print('Invalid Command!')
+            print(e)
+            return
+
+        except SystemExit:
+            # The SystemExit exception prints the usage for --help
+            # We do not need to do the print here.
+
+            return
+
+        return func(self, opt)
+
+    fn.__name__ = func.__name__
+    fn.__doc__ = func.__doc__
+    fn.__dict__.update(func.__dict__)
+    return fn
+
+
+class AnalyzerCmd (cmd.Cmd):
+    intro = 'Welcome to my interactive program!' \
+        + ' (type help for a list of commands.)'
+    prompt = 'Twitter_Sentiment:> '
+    file = None
+
+    @docopt_cmd
+    def do_fetch(self, arg):
+        """Usage: fetch <username> <duration>"""
+        cmd_render.get_tweets(arg['<username>'], int(arg['<duration>']))
+
+    @docopt_cmd
+    def do_sentiment(self, arg):
+        """Usage: sentiment <all> <docsentiment> <emotion> """
+        print(cmd_render.sentiment_analysis(arg['<all>'], arg['<docsentiment>'], arg['<emotion>']))
+        cmd_render.emotion_graph()
+
+    @docopt_cmd
+    def do_savejson(self, arg):
+        """Usage: savejson <filename>"""
+
+        print(arg)
+
+    @docopt_cmd
+    def do_wordfrequency(self, arg):
+        """Usage: wordfrequency """
+        cmd_render.word_count_analysis()
+
+    def do_quit(self, arg):
+        """Quits out of Interactive Mode."""
+
+        print('Good Bye!')
+        exit()
+
+opt = docopt(__doc__, sys.argv[1:])
+
+if opt['--interactive']:
+    AnalyzerCmd().cmdloop()
+
+print(opt)
