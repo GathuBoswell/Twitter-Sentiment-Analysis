@@ -6,31 +6,39 @@ class GetData(object):
         self.__access_secret = access_secret
         self._json_file = 'all_tweets.json'
 
-    def get_tweets(self, twitter_username):
+    def get_tweets(self, twitter_username, duration=7):
+        import datetime
         import tweepy
         import json
-        # authorize twitter
+        import time
+        from pprint import pprint
+        import tqdm as pbar
+
         auth = tweepy.OAuthHandler(self.__cons_key, self.__cons_secret)
         auth.set_access_token(self.__access_key, self.__access_secret)
         api = tweepy.API(auth)
-        # list to hold all the tweets generated
         all_tweets = []
-        # get all recent tweets with a max of 200 tweets per page
-        new_tweets = api.user_timeline(screen_name=twitter_username, count=200)
-        all_tweets.extend(new_tweets)
-        oldest = all_tweets[-1].id - 1
-        while len(new_tweets) > 0:
-            new_tweets = api.user_timeline(screen_name=twitter_username, count=200, max_id=oldest)
-            all_tweets.extend(new_tweets)
-            oldest = all_tweets[-1].id - 1
-            ### implement the status bar
+
+        new_tweets = (api.user_timeline(screen_name=twitter_username,
+                                            count=1))
+        oldest_id = new_tweets[-1].id - 1
+        for i in pbar.tqdm(range(5)):
+            all_tweets.extend(api.user_timeline(screen_name=twitter_username,
+                                       count=20, max_id=oldest_id))
+            oldest_id = all_tweets[-1].id - 1
+            time.sleep(0)
+
+
+        earliest_tweet_date = (all_tweets[0].created_at).date()
+        tweet_max_date = earliest_tweet_date + datetime.timedelta(days=duration)
         status_list = []
-        with open(self._json_file, 'w') as json_data:
-            for status in all_tweets:
-                status_list.append(status._json)
-                # status._json converts tweepy status object to JSON serializable response data
-                #json.dump(status._json, json_data, sort_keys=True, indent=4)
-            json.dump(status_list, json_data)
+        for tweet in all_tweets:
+            if(tweet.created_at).date() <= tweet_max_date:
+                status_list.append(tweet._json)
+
+            with open(self._json_file, 'w') as json_data:
+                json.dump(status_list, json_data)
+
         return ''
 
     def word_list(self):
@@ -49,9 +57,8 @@ class GetData(object):
         words = []
         for status in tweet_list:
             for word in status['text'].split():
-                # create a regex to catch this class ['@#."']
-                #if word.startswith('#') or word.startswith('@') or word.startswith('http'):
-                if unwanted_texts.match(word) or word.startswith('http') or word.startswith('http'):
+                if unwanted_texts.match(word) or word.startswith('http')\
+                    or word.startswith('http'):
                     continue
                 else:
                     for word_members in (word.replace(':',' ').replace('.',' '
@@ -59,9 +66,8 @@ class GetData(object):
                                         ).replace('"', ' ').replace('-',' '
                                         ).replace('/',' ').split()
                                         ):
-                    # word_members = re.findall(r"[\w]+", word)
-                    # words.extend(word_members)
-                        if (word_members not in cachedStopWords) and (word_members != 'RT'):
+                        if (word_members not in cachedStopWords) and\
+                            (word_members != 'RT'):
                             words.append(str(word_members))
         return words
 
@@ -95,20 +101,26 @@ class GetData(object):
         while count > -20:
             word, value = sorted_list[count]
             percent = (value/count_sum)*100
-            print(word, 'appears ', value, 'times and percentage is {:.2f}'.format(percent))
+            print(word, 'appears ', value, 'times and'
+                 ' percentage is {:.2f}'.format(percent))
             count += -1
 
     def sentiment_analysis(self):
-        import json
         from watson_developer_cloud import AlchemyLanguageV1
         alchemyapi = AlchemyLanguageV1(api_key='0e1c5001c8047a3f0492469bf8449d40949f5d1f')
 
         words_list = ' '.join(self.word_list())
 
-        response = alchemyapi.sentiment("text", words_list)
-        tweets_sentiment = response
-        emotion_response = alchemyapi.emotion(text=words_list)
-        return (response, emotion_response)
+        tweets_sentiment = alchemyapi.sentiment(text=words_list)
+        tweets_emotion = alchemyapi.emotion(text=words_list)
+        return (tweets_sentiment, tweets_emotion)
+
+    def progress(self, length):
+        from tqdm import tqdm
+        import time
+
+        for iteration in tqdm(length):
+            time.sleep(0.5)
 
 
 def main():
@@ -118,9 +130,8 @@ def main():
     access_key = "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d"
     access_secret = "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
     data = GetData(cons_key, cons_secret, access_key, access_secret)
-    #tweets = data.get_tweets('@realdonaldTrump')
-    #print(data.word_frequency())
-    #data.word_count_analysis()
+    tweets = data.get_tweets('@realdonaldTrump')
+    data.word_count_analysis()
     for item in data.sentiment_analysis():
         pprint(item)
 
