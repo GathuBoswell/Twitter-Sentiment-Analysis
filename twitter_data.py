@@ -10,8 +10,6 @@ class GetData(object):
         import datetime
         import tweepy
         import json
-        import time
-        from pprint import pprint
         import tqdm as pbar
 
         auth = tweepy.OAuthHandler(self.__cons_key, self.__cons_secret)
@@ -26,7 +24,6 @@ class GetData(object):
             all_tweets.extend(api.user_timeline(screen_name=twitter_username,
                                        count=20, max_id=oldest_id))
             oldest_id = all_tweets[-1].id - 1
-            time.sleep(0)
 
 
         earliest_tweet_date = (all_tweets[0].created_at).date()
@@ -105,23 +102,29 @@ class GetData(object):
                  ' percentage is {:.2f}'.format(percent))
             count += -1
 
-    def sentiment_analysis(self):
+    def sentiment_analysis(self, all=True, sentiment=False, emotion=False):
         from watson_developer_cloud import AlchemyLanguageV1
         alchemyapi = AlchemyLanguageV1(api_key='0e1c5001c8047a3f0492469bf8449d40949f5d1f')
 
         words_list = ' '.join(self.word_list())
 
         tweets_sentiment = alchemyapi.sentiment(text=words_list)
-        tweets_emotion = alchemyapi.emotion(text=words_list)
-        return (tweets_sentiment, tweets_emotion)
+        self.__tweets_emotion = alchemyapi.emotion(text=words_list)
+        return (tweets_sentiment['docSentiment'], self.__tweets_emotion['docEmotions'])
 
-    def progress(self, length):
-        from tqdm import tqdm
-        import time
+    def emotion_graph(self):
+        from ascii_graph import Pyasciigraph
+        import ascii_graph.colors as cols
 
-        for iteration in tqdm(length):
-            time.sleep(0.5)
-
+        total_emotion_value = [(str(emotion).capitalize(), float(value)*100) for emotion,
+                                value in self.__tweets_emotion['docEmotions'].items()]
+        colors = [cols.Pur, cols.Red, cols.Gre, cols.Cya]
+        for item in total_emotion_value:
+            for i in range(len(total_emotion_value)):
+                item.add(colors[i])
+        graph = Pyasciigraph()
+        for line in graph.graph('Emotions Graph', total_emotion_value):
+            print(line)
 
 def main():
     from pprint import pprint
@@ -130,8 +133,8 @@ def main():
     access_key = "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d"
     access_secret = "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
     data = GetData(cons_key, cons_secret, access_key, access_secret)
-    tweets = data.get_tweets('@realdonaldTrump')
-    data.word_count_analysis()
+    #tweets = data.get_tweets('@realdonaldTrump')
+    # data.word_count_analysis()
     for item in data.sentiment_analysis():
         pprint(item)
 
