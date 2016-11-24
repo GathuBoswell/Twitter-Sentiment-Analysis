@@ -16,26 +16,26 @@ class GetData(object):
         auth.set_access_token(self.__access_key, self.__access_secret)
         api = tweepy.API(auth)
         all_tweets = []
+        try:
+            new_tweets = (api.user_timeline(screen_name=twitter_username,
+                                            count=20))
+            oldest_id = new_tweets[-1].id - 1
+            for i in pbar.tqdm(range(5)):
+                all_tweets.extend(api.user_timeline(screen_name=twitter_username,
+                                                    count=20, max_id=oldest_id))
+                oldest_id = all_tweets[-1].id - 1
 
-        new_tweets = (api.user_timeline(screen_name=twitter_username,
-                                            count=1))
-        oldest_id = new_tweets[-1].id - 1
-        for i in pbar.tqdm(range(5)):
-            all_tweets.extend(api.user_timeline(screen_name=twitter_username,
-                                       count=20, max_id=oldest_id))
-            oldest_id = all_tweets[-1].id - 1
+            earliest_tweet_date = (all_tweets[0].created_at).date()
+            tweet_max_date = earliest_tweet_date + datetime.timedelta(days=duration)
+            status_list = []
+            for tweet in all_tweets:
+                if (tweet.created_at).date() <= tweet_max_date:
+                    status_list.append(tweet._json)
 
-
-        earliest_tweet_date = (all_tweets[0].created_at).date()
-        tweet_max_date = earliest_tweet_date + datetime.timedelta(days=duration)
-        status_list = []
-        for tweet in all_tweets:
-            if(tweet.created_at).date() <= tweet_max_date:
-                status_list.append(tweet._json)
-
-            with open(self._json_file, 'w') as json_data:
-                json.dump(status_list, json_data)
-
+                with open(self._json_file, 'w') as json_data:
+                    json.dump(status_list, json_data, indent=4)
+        except tweepy.error.TweepError:
+            print('Invalid Username, try agin with a valid username')
         return ''
 
     def word_list(self):
@@ -44,13 +44,16 @@ class GetData(object):
         from nltk.corpus import stopwords
 
         cachedStopWords = stopwords.words("english")
+        cachedStopWords.append(')')
+        cachedStopWords.append('-')
+        cachedStopWords.append(',')
         tweet_list = []
         with open(self._json_file, 'r') as tweet_data:
             data = json.load(tweet_data)
         tweet_list.extend(data)
         # print(len(tweet_list))
         # pprint(tweet_list)
-        unwanted_texts = re.compile('[@#-&()."]')
+        unwanted_texts = re.compile('[@#-&()..."]')
         words = []
         for status in tweet_list:
             for word in status['text'].split():
@@ -89,18 +92,21 @@ class GetData(object):
 
     def word_count_analysis(self):
         from operator import itemgetter
+        from prettytable import PrettyTable
 
         word_count = self.word_frequency()
         sort = word_count.items()
         sorted_list =(sorted(sort, key=itemgetter(1)))
         count_sum = sum(word_count.values())
         count = -1
+        tweet_table = PrettyTable(['Word', 'Count', 'Percent'])
         while count > -20:
             word, value = sorted_list[count]
             percent = (value/count_sum)*100
-            print(word, 'appears ', value, 'times and'
-                 ' percentage is {:.2f}'.format(percent))
+            percent1 = ('{:.2f}'.format(percent))
+            tweet_table.add_row([word, value, percent1])
             count += -1
+        print(tweet_table)
 
     def sentiment_analysis(self, all=True, sentiment=False, emotion=False):
         from watson_developer_cloud import AlchemyLanguageV1
@@ -114,14 +120,9 @@ class GetData(object):
 
     def emotion_graph(self):
         from ascii_graph import Pyasciigraph
-        import ascii_graph.colors as cols
 
         total_emotion_value = [(str(emotion).capitalize(), float(value)*100) for emotion,
                                 value in self.__tweets_emotion['docEmotions'].items()]
-        colors = [cols.Pur, cols.Red, cols.Gre, cols.Cya]
-        for item in total_emotion_value:
-            for i in range(len(total_emotion_value)):
-                item.add(colors[i])
         graph = Pyasciigraph()
         for line in graph.graph('Emotions Graph', total_emotion_value):
             print(line)
