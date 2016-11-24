@@ -1,15 +1,31 @@
 class GetData(object):
-    def __init__(self, cons_key, cons_secret, access_key, access_secret):
-        self.__cons_key = cons_key
-        self.__cons_secret = cons_secret
-        self.__access_key = access_key
-        self.__access_secret = access_secret
+    def __init__(self):
+        # , cons_key, cons_secret, access_key, access_secret
+        import json as json
+        # self.__cons_key = cons_key
+        # self.__cons_secret = cons_secret
+        # self.__access_key = access_key
+        # self.__access_secret = access_secret
+        self.json = json
         self._json_file = 'all_tweets.json'
+        self.api_file = 'api_key.json'
+
+    def setup(self):
+        try:
+            with open(self.api_file, 'r') as api_file:
+                api_keys = self.json.load(api_file)
+            self.__alchemy_key = api_keys[0]['alchemy']
+            self.__cons_key = api_keys[0]['twitter']['cons_keys']
+            self.__cons_secret = api_keys[0]['twitter']['cons_secret']
+            self.__access_key = api_keys[0]['twitter']['access_keys']
+            self.__access_secret = api_keys[0]['twitter']['access_secret']
+        except IOError:
+            print('The file containing the API keys cannot be found,'
+                  'Please run: python api_setup.py to set that data')
 
     def get_tweets(self, twitter_username, duration=7):
         import datetime
         import tweepy
-        import json
         import tqdm as pbar
 
         auth = tweepy.OAuthHandler(self.__cons_key, self.__cons_secret)
@@ -33,7 +49,7 @@ class GetData(object):
                     status_list.append(tweet._json)
 
                 with open(self._json_file, 'w') as json_data:
-                    json.dump(status_list, json_data, indent=4)
+                    self.json.dump(status_list, json_data, indent=4)
         except tweepy.TweepError as e:
             if e.reason == "[{'message': 'Sorry, that page does not exist.', 'code': 34}]":
                 print('Invalid twitter username, try again with a valid username')
@@ -56,8 +72,6 @@ class GetData(object):
         with open(self._json_file, 'r') as tweet_data:
             data = json.load(tweet_data)
         tweet_list.extend(data)
-        # print(len(tweet_list))
-        # pprint(tweet_list)
         unwanted_texts = re.compile('[@#-&()..."]')
         words = []
         for status in tweet_list:
@@ -115,7 +129,7 @@ class GetData(object):
 
     def sentiment_analysis(self, all=True, sentiment=False, emotion=False):
         from watson_developer_cloud import AlchemyLanguageV1
-        alchemyapi = AlchemyLanguageV1(api_key='0e1c5001c8047a3f0492469bf8449d40949f5d1f')
+        alchemyapi = AlchemyLanguageV1(api_key=self.__alchemy_key)
 
         words_list = ' '.join(self.word_list())
 
@@ -153,16 +167,8 @@ class GetData(object):
         return
 
 def main():
-    from pprint import pprint
-    cons_key = "qrRMCNNtOtWlN7YPAwllY4C9p"
-    cons_secret = "WuA5sp6Do0Q3ohcyTztBjeF0Z8fRQaNFxJQzD0HAWXJpGEA46K"
-    access_key = "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d"
-    access_secret = "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
-    data = GetData(cons_key, cons_secret, access_key, access_secret)
-    #tweets = data.get_tweets('@realdonaldTrump')
-    # data.word_count_analysis()
-    for item in data.sentiment_analysis():
-        pprint(item)
+    setup_getdata = GetData
+    setup_getdata.setup()
 
 if __name__ == '__main__':main()
 
