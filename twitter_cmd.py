@@ -6,12 +6,15 @@ Usage:
     my_program fetch <username> <duration>
     my_program wordfrequency
     my_program savejson <filename>
-    my_program sentiment <all> <docsentiment> <emotion>
+    my_program sentiment [--all] [--docsentiment] [--emotion]
     my_program (-i | --interactive)
     my_program (-h | --help | --version)
 Options:
     -i, --interactive  Interactive Mode
     -h, --help  Show this screen and exit.
+    --all
+    --docsentiment
+    --emotion
 """
 
 import sys
@@ -84,30 +87,27 @@ class AnalyzerCmd (cmd.Cmd):
     file = None
 
     @docopt_cmd
-    def do_fetch(self, arg):
+    def do_fetch(self, args):
         """Usage: fetch <username> <duration>"""
-        cmd_render.get_tweets(arg['<username>'], int(arg['<duration>']))
+        cmd_render.get_tweets(args['<username>'], int(args['<duration>']))
 
     @docopt_cmd
-    def do_sentiment(self, arg):
-        """Usage: sentiment <all> <docsentiment> <emotion> """
-        print(cmd_render.sentiment_analysis(arg['<all>'], arg['<docsentiment>'], arg['<emotion>']))
-        cmd_render.emotion_graph()
+    def do_sentiment(self, args):
+        """Usage: sentiment [--all] [--docsentiment] [--emotion] """
+        print(cmd_render.sentiment_analysis(args['--all'], args['--docsentiment'], args['--emotion']))
 
     @docopt_cmd
-    def do_savejson(self, arg):
+    def do_savejson(self, args):
         """Usage: savejson <filename>"""
-
-        print(arg)
+        print(args)
 
     @docopt_cmd
-    def do_wordfrequency(self, arg):
+    def do_wordfrequency(self, args):
         """Usage: wordfrequency """
         cmd_render.word_count_analysis()
 
-    def do_quit(self, arg):
+    def do_quit(self, args):
         """Quits out of Interactive Mode."""
-
         print('Good Bye!')
         exit()
 
