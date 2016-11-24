@@ -34,8 +34,17 @@ class GetData(object):
 
                 with open(self._json_file, 'w') as json_data:
                     json.dump(status_list, json_data, indent=4)
-        except tweepy.error.TweepError:
-            print('Invalid Username, try agin with a valid username')
+        except tweepy.TweepError as e:
+            # print(e)
+            # err = json.loads(e.reason)
+            # print(e[0])
+            # # print(type(e[0]))
+            if e.reason == "[{'message': 'Sorry, that page does not exist.', 'code': 34}]":
+                print('Invalid twitter username, try again with a valid username')
+            elif e.reason == 'Not authorized.':
+                print('You are not authorized to view this person tweets!, (protected tweets)')
+            else:
+                print('Internet connection required, please connect and try again')
         return ''
 
     def word_list(self):
@@ -114,9 +123,14 @@ class GetData(object):
 
         words_list = ' '.join(self.word_list())
 
-        tweets_sentiment = alchemyapi.sentiment(text=words_list)
+        self.__tweets_sentiment = alchemyapi.sentiment(text=words_list)
         self.__tweets_emotion = alchemyapi.emotion(text=words_list)
-        return (tweets_sentiment['docSentiment'], self.__tweets_emotion['docEmotions'])
+        if all:
+            return (self.sentiment_table(), self.emotion_graph())
+        if sentiment:
+            return self.sentiment_table()
+        if emotion:
+            return self.emotion_graph()
 
     def emotion_graph(self):
         from ascii_graph import Pyasciigraph
@@ -125,7 +139,18 @@ class GetData(object):
                                 value in self.__tweets_emotion['docEmotions'].items()]
         graph = Pyasciigraph()
         for line in graph.graph('Emotions Graph', total_emotion_value):
-            print(line)
+            print('         ', line)
+        return
+
+    def sentiment_table(self):
+        from prettytable import PrettyTable
+
+        sent_dict = self.__tweets_sentiment['docSentiment']
+        sentiment_data = PrettyTable(['Sentiment Type', 'Score', 'if_mixed'])
+        sentiment_data.add_row([sent_dict['type'], sent_dict['score'], sent_dict['mixed']])
+        print('\n')
+        print(sentiment_data)
+        return
 
 def main():
     from pprint import pprint
