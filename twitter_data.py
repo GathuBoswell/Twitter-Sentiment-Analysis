@@ -14,7 +14,7 @@ class GetData(object):
 
         auth = tweepy.OAuthHandler(self.__cons_key, self.__cons_secret)
         auth.set_access_token(self.__access_key, self.__access_secret)
-        api = tweepy.API(auth)
+        api = tweepy.API(auth, timeout=5)
         all_tweets = []
         try:
             new_tweets = (api.user_timeline(screen_name=twitter_username,
@@ -35,10 +35,6 @@ class GetData(object):
                 with open(self._json_file, 'w') as json_data:
                     json.dump(status_list, json_data, indent=4)
         except tweepy.TweepError as e:
-            # print(e)
-            # err = json.loads(e.reason)
-            # print(e[0])
-            # # print(type(e[0]))
             if e.reason == "[{'message': 'Sorry, that page does not exist.', 'code': 34}]":
                 print('Invalid twitter username, try again with a valid username')
             elif e.reason == 'Not authorized.':
@@ -134,9 +130,13 @@ class GetData(object):
 
     def emotion_graph(self):
         from ascii_graph import Pyasciigraph
+        import ascii_graph.colors as c
+        from ascii_graph.colordata import vcolor
 
-        total_emotion_value = [(str(emotion).capitalize(), float(value)*100) for emotion,
+        col_pattern = [c.Gre, c.Yel, c.Cya, c.Red, c.Pur]
+        data = [(str(emotion).capitalize(), float(value)*100) for emotion,
                                 value in self.__tweets_emotion['docEmotions'].items()]
+        total_emotion_value = vcolor(data, col_pattern)
         graph = Pyasciigraph()
         for line in graph.graph('Emotions Graph', total_emotion_value):
             print('         ', line)
