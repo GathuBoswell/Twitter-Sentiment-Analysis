@@ -16,6 +16,10 @@ Options:
 
 import sys
 import cmd
+import click
+from colorama import init
+from termcolor import cprint
+from pyfiglet import figlet_format
 from docopt import docopt, DocoptExit
 
 from twitter_data import GetData
@@ -30,6 +34,17 @@ cmd_render = GetData(user_data['cons_key'],
                      user_data['cons_secret'],
                      user_data['access_key'],
                      user_data['access_secret'])
+
+def app_intro():
+    click.secho('=' * 75, fg='cyan')
+    click.secho('*' * 75, fg='green')
+    click.secho('=' * 75, fg='cyan')
+    init(strip=not sys.stdout.isatty())  # # strip colors if stdout is redirected
+    cprint(figlet_format('Twitter Sentiment Analyzer', font='big'), 'red')
+    click.secho('*' * 75, fg='cyan')
+    click.secho('=' * 75, fg='green')
+    click.secho('*' * 75, fg='cyan')
+    return ''
 
 def docopt_cmd(func):
     """
@@ -99,6 +114,7 @@ class AnalyzerCmd (cmd.Cmd):
 opt = docopt(__doc__, sys.argv[1:])
 
 if opt['--interactive']:
+    print(app_intro())
     AnalyzerCmd().cmdloop()
 
 print(opt)
