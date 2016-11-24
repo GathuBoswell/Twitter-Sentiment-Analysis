@@ -81,8 +81,8 @@ def docopt_cmd(func):
 
 
 class AnalyzerCmd (cmd.Cmd):
-    intro = 'Welcome to my interactive program!' \
-        + ' (type help for a list of commands.)'
+    intro = '''                 Twitter Sentiment Analysis\n
+               Type help to view list of commands\n'''
     prompt = 'Twitter_Sentiment:> '
     file = None
 
@@ -106,9 +106,13 @@ class AnalyzerCmd (cmd.Cmd):
         """Usage: wordfrequency """
         cmd_render.word_count_analysis()
 
+    def do_home(self):
+        pass
+
     def do_quit(self, args):
         """Quits out of Interactive Mode."""
-        print('Good Bye!')
+        print('Exiting ....')
+        print( 'Best of Luck!!')
         exit()
 
 opt = docopt(__doc__, sys.argv[1:])
