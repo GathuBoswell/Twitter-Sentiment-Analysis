@@ -19,9 +19,9 @@ Options:
 
 import sys
 import cmd
-import click
 from colorama import init
 from termcolor import cprint
+from termcolor import colored
 from pyfiglet import figlet_format
 from docopt import docopt, DocoptExit
 
@@ -33,18 +33,16 @@ cmd_render.setup()
 def app_intro():
     init(strip=not sys.stdout.isatty())  # # strip colors if stdout is redirected
     cprint(figlet_format('Twitter Sentiment Analyzer', font='big'), 'red')
-    print('					The list of commands available are as below')
-    print('					===========================================')
+    print(colored('					The list of commands available are as below', 'cyan'))
+    print(colored('					===========================================', 'cyan'))
     print('\n')
-    print('						commands									Description')
-    print('					   -----------------								    -------------------')
-    print(
-        '				fetch <twitter_handle> <number_of_days_to_get_tweets_from>		Get all tweets of the entered username')
-    print('				wordfrequency								Prints word count for all words in the tweets')
-    print(
-        '				sentiment <--all> <--docsentiment> <--emotion> 				Prints sentiment analysis with specified option')
-    print('				help									prints the docopt menu of commands')
-    print('				home									prints this menu')
+    print(colored('						commands									Description', 'cyan'))
+    print(colored('					   -----------------								    -------------------', 'cyan'))
+    print(colored('				fetch <twitter_handle> <number_of_days_to_get_tweets_from>		Get all tweets of the entered username', 'cyan'))
+    print(colored('				wordfrequency								Prints word count for all words in the tweets', 'cyan'))
+    print(colored('				sentiment <--all> <--docsentiment> <--emotion> 				Prints sentiment analysis with specified option', 'cyan'))
+    print(colored('				help									prints the docopt menu of commands', 'cyan'))
+    print(colored('				home									prints this menu', 'cyan'))
     return ''
 
 def docopt_cmd(func):
