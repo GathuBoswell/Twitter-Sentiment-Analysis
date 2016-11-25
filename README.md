@@ -154,4 +154,13 @@
     ```
   *  Running the fetch command with no internet connection
     ```
+    Twitter_Sentiment:> fetch @invalidUsename 7
+    Invalid twitter username, try again with a valid username
+    ```
+  *  Running the fetch command with a twitter handle whose tweets have been protected
+    ```
+    Twitter_Sentiment:> fetch @protected_handle 7
+    You are not authorized to view this person tweets!, (protected tweets)
+    ```
     
+  
