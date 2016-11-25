@@ -54,5 +54,47 @@
     Enter the tWitter access Secret: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
   ```
 * Run the app
-  *  `python twitter_cmd.py`
+  *  `python twitter_cmd.py -i`
   *  Running the command above will produce output that's similar to the sample below.
+  ```
+     _______       _ _   _
+    |__   __|     (_) | | |
+       | |_      ___| |_| |_ ___ _ __
+       | \ \ /\ / / | __| __/ _ \ '__|
+       | |\ V  V /| | |_| ||  __/ |
+       |_| \_/\_/ |_|\__|\__\___|_|
+    
+    
+      _____            _   _                      _
+     / ____|          | | (_)                    | |
+    | (___   ___ _ __ | |_ _ _ __ ___   ___ _ __ | |_
+     \___ \ / _ \ '_ \| __| | '_ ` _ \ / _ \ '_ \| __|
+     ____) |  __/ | | | |_| | | | | | |  __/ | | | |_
+    |_____/ \___|_| |_|\__|_|_| |_| |_|\___|_| |_|\__|
+    
+    
+                          _
+        /\               | |
+       /  \   _ __   __ _| |_   _ _______ _ __
+      / /\ \ | '_ \ / _` | | | | |_  / _ \ '__|
+     / ____ \| | | | (_| | | |_| |/ /  __/ |
+    /_/    \_\_| |_|\__,_|_|\__, /___\___|_|
+                             __/ |
+                            |___/
+
+                                        The list of commands available are as below
+                                        ===========================================
+
+
+                                                commands                                                                Description
+                                           -----------------                                                        -------------------
+                                fetch <twitter_handle> <number_of_days_to_get_tweets_from>          Get all tweets of the entered username
+                                wordfrequency                                                       Prints word count for all words in the tweets
+                                sentiment <--all> <--docsentiment> <--emotion>                      Prints sentiment analysis with specified option
+                                help                                                                prints the docopt menu of commands
+                                home                                                                prints this menu
+
+                 Twitter Sentiment Analysis
+
+               Type help to view list of commands
+  ```
