@@ -19,6 +19,9 @@
       
 ## Dependencies
 
+### Python Version
+   * version 3.XX
+
 ### Libraries used
 *  This app's functionality depends on multiple Python packages including;
   *  **[ascii-graph](https://pypi.python.org/pypi/ascii_graph/1.2.0)** - This package handles console graphs, representing data in a visual manner, it also adds rendering with color
