@@ -27,26 +27,24 @@ from docopt import docopt, DocoptExit
 
 from twitter_data import GetData
 
-user_data = {'cons_key': "qrRMCNNtOtWlN7YPAwllY4C9p",
-             'cons_secret': "WuA5sp6Do0Q3ohcyTztBjeF0Z8fRQaNFxJQzD0HAWXJpGEA46K",
-             'access_key': "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d",
-             'access_secret': "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
-             }
-
-cmd_render = GetData(user_data['cons_key'],
-                     user_data['cons_secret'],
-                     user_data['access_key'],
-                     user_data['access_secret'])
+cmd_render = GetData()
+cmd_render.setup()
 
 def app_intro():
-    click.secho('=' * 75, fg='cyan')
-    click.secho('*' * 75, fg='green')
-    click.secho('=' * 75, fg='cyan')
     init(strip=not sys.stdout.isatty())  # # strip colors if stdout is redirected
     cprint(figlet_format('Twitter Sentiment Analyzer', font='big'), 'red')
-    click.secho('*' * 75, fg='cyan')
-    click.secho('=' * 75, fg='green')
-    click.secho('*' * 75, fg='cyan')
+    print('					The list of commands available are as below')
+    print('					===========================================')
+    print('\n')
+    print('						commands									Description')
+    print('					   -----------------								    -------------------')
+    print(
+        '				fetch <twitter_handle> <number_of_days_to_get_tweets_from>		Get all tweets of the entered username')
+    print('				wordfrequency								Prints word count for all words in the tweets')
+    print(
+        '				sentiment <--all> <--docsentiment> <--emotion> 				Prints sentiment analysis with specified option')
+    print('				help									prints the docopt menu of commands')
+    print('				home									prints this menu')
     return ''
 
 def docopt_cmd(func):
