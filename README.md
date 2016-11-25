@@ -21,12 +21,12 @@
 
 ### Libraries used
 *  This app's functionality depends on multiple Python packages including;
-  *  **[ascii-graph](https://www.djangoproject.com/)** - This package handles console graphs, representing data in a visual manner, it also adds rendering with color
-  *  **[docopt](http://www.django-rest-framework.org/)** - This is a powerful commandline library that lets a user enter commands and any number of parameters.
-  *  **[tweepy](https://github.com/omab/python-social-auth)** - This package handles integration to the twitter API, letting a user fetch tweets among other functions.
-  *  **[watson-developer-cloud](https://pillow.readthedocs.org/en/3.1.x/)** - This package handles integration with the Alchemy API
-  *  **[prettytable](https://pypi.python.org/pypi/ipdb)** - This package helps in rendering data in a tabular form
-  *  **[nltk](https://github.com/kennethreitz/autoenv)** - This package provides a list of all stop words which are used to remove all stop words in the collected tweets
+  *  **[ascii-graph](https://pypi.python.org/pypi/ascii_graph/1.2.0)** - This package handles console graphs, representing data in a visual manner, it also adds rendering with color
+  *  **[docopt](https://pypi.python.org/pypi/docopt)** - This is a powerful commandline library that lets a user enter commands and any number of parameters.
+  *  **[tweepy](https://pypi.python.org/pypi/tweepy/3.5.0)** - This package handles integration to the twitter API, letting a user fetch tweets among other functions.
+  *  **[watson-developer-cloud](https://pypi.python.org/pypi/watson-developer-cloud)** - This package handles integration with the Alchemy API
+  *  **[prettytable](https://pypi.python.org/pypi/PrettyTable)** - This package helps in rendering data in a tabular form
+  *  **[nltk](https://pypi.python.org/pypi/nltk)** - This package provides a list of all stop words which are used to remove all stop words in the collected tweets
 
 ## Installation and setup
 *  Navigate to a directory of choice on `terminal`.
@@ -98,3 +98,4 @@
     
        Type help to view list of commands
   ```
+  
