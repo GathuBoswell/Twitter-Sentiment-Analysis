@@ -97,5 +97,61 @@
          Twitter Sentiment Analysis
     
        Type help to view list of commands
+       Twitter_Sentiment:> fetch @realdonaldTrump 7
+        100%|##########################################################################################################################################################| 5/5 [00:05<00:00,  1.17s/it]
+        Twitter_Sentiment:> wordfrequency
+        +-----------+-------+---------+
+        |    Word   | Count | Percent |
+        +-----------+-------+---------+
+        |     I     |   46  |   3.16  |
+        |    The    |   23  |   1.58  |
+        |   great   |   16  |   1.10  |
+        |    win    |   13  |   0.89  |
+        |     We    |   13  |   0.89  |
+        |    time   |   11  |   0.76  |
+        |   Trump   |   10  |   0.69  |
+        |    Very   |   10  |   0.69  |
+        |   GREAT   |   9   |   0.62  |
+        |  election |   9   |   0.62  |
+        |    vote   |   9   |   0.62  |
+        |    last   |   8   |   0.55  |
+        | President |   8   |   0.55  |
+        |    New    |   8   |   0.55  |
+        |   people  |   8   |   0.55  |
+        |    many   |   8   |   0.55  |
+        |   night   |   7   |   0.48  |
+        |   today   |   7   |   0.48  |
+        |    Just   |   7   |   0.48  |
+        +-----------+-------+---------+
+        Twitter_Sentiment:>
+        Twitter_Sentiment:> sentiment --all
+
+
+        +----------------+----------+----------+
+        | Sentiment Type |  Score   | if_mixed |
+        +----------------+----------+----------+
+        |    positive    | 0.969859 |    1     |
+        +----------------+----------+----------+
+                  Emotions Graph
+                  ###############################################################################
+                  █                                                                    1  Disgust
+                  ██████████████████                                                  18  Anger
+                  ██████████████████████████████████████████████████████████████████  63  Joy
+                                                                                       0  Fear
+                  ████████████████                                                    15  Sadness
+                  Twitter_Sentiment:> sentiment --docsentiment
+                  
+                    +----------------+----------+----------+
+                    | Sentiment Type |  Score   | if_mixed |
+                    +----------------+----------+----------+
+                    |    positive    | 0.969859 |    1     |
+                    +----------------+----------+----------+
   ```
-  
+  *  Running the fetch command with invalid username
+    ```
+      Twitter_Sentiment:> fetch @invalidUsename 7
+      Invalid twitter username, try again with a valid username
+    ```
+  *  Running the fetch command with no internet connection
+    ```
+    
