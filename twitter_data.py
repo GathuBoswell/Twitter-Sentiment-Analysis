@@ -1,11 +1,6 @@
 class GetData(object):
     def __init__(self):
-        # , cons_key, cons_secret, access_key, access_secret
         import json as json
-        # self.__cons_key = cons_key
-        # self.__cons_secret = cons_secret
-        # self.__access_key = access_key
-        # self.__access_secret = access_secret
         self.json = json
         self._json_file = 'all_tweets.json'
         self.api_file = 'api_key.json'
@@ -14,10 +9,10 @@ class GetData(object):
         try:
             with open(self.api_file, 'r') as api_file:
                 api_keys = self.json.load(api_file)
-            self.__alchemy_key = api_keys[0]['alchemy']
-            self.__cons_key = api_keys[0]['twitter']['cons_keys']
+            self.__alchemy_key = api_keys[0]['alchemy']['key']
+            self.__cons_key = api_keys[0]['twitter']['cons_key']
             self.__cons_secret = api_keys[0]['twitter']['cons_secret']
-            self.__access_key = api_keys[0]['twitter']['access_keys']
+            self.__access_key = api_keys[0]['twitter']['access_key']
             self.__access_secret = api_keys[0]['twitter']['access_secret']
         except IOError:
             print('The file containing the API keys cannot be found,'
@@ -30,31 +25,37 @@ class GetData(object):
 
         auth = tweepy.OAuthHandler(self.__cons_key, self.__cons_secret)
         auth.set_access_token(self.__access_key, self.__access_secret)
-        api = tweepy.API(auth, timeout=5)
+        api = tweepy.API(auth)
         all_tweets = []
         try:
             new_tweets = (api.user_timeline(screen_name=twitter_username,
                                             count=20))
-            oldest_id = new_tweets[-1].id - 1
-            for i in pbar.tqdm(range(5)):
-                all_tweets.extend(api.user_timeline(screen_name=twitter_username,
-                                                    count=20, max_id=oldest_id))
-                oldest_id = all_tweets[-1].id - 1
+            all_tweets.extend(new_tweets)
+            if len(all_tweets) > 0:
+                oldest_id = new_tweets[-1].id - 1
+                for i in pbar.tqdm(range(5)):
+                    new_tweets = (api.user_timeline(screen_name=twitter_username,
+                                                        count=20, max_id=oldest_id))
+                    oldest_id = all_tweets[-1].id - 1
+                    all_tweets.extend(new_tweets)
 
-            earliest_tweet_date = (all_tweets[0].created_at).date()
-            tweet_max_date = earliest_tweet_date + datetime.timedelta(days=duration)
-            status_list = []
-            for tweet in all_tweets:
-                if (tweet.created_at).date() <= tweet_max_date:
-                    status_list.append(tweet._json)
+                earliest_tweet_date = (all_tweets[0].created_at).date()
+                tweet_max_date = earliest_tweet_date + datetime.timedelta(days=duration)
+                status_list = []
+                for tweet in all_tweets:
+                    if (tweet.created_at).date() <= tweet_max_date:
+                        status_list.append(tweet._json)
 
-                with open(self._json_file, 'w') as json_data:
-                    self.json.dump(status_list, json_data, indent=4)
+                    with open(self._json_file, 'w') as json_data:
+                        self.json.dump(status_list, json_data, indent=4)
+            else:
+                print('No tweets available for the entered duration')
         except tweepy.TweepError as e:
-            if e.reason == "[{'message': 'Sorry, that page does not exist.', 'code': 34}]":
-                print('Invalid twitter username, try again with a valid username')
-            elif e.reason == 'Not authorized.':
+            #print(e.args[0][0]['code'])
+            if e.reason == 'Not authorized.':
                 print('You are not authorized to view this person tweets!, (protected tweets)')
+            elif e.args[0][0]['code'] == 34:
+                print('Invalid twitter username, try again with a valid username')
             else:
                 print('Internet connection required, please connect and try again')
         return ''
@@ -171,6 +172,3 @@ def main():
     setup_getdata.setup()
 
 if __name__ == '__main__':main()
-
-
-
