@@ -1,6 +1,8 @@
 class GetData(object):
     def __init__(self):
         import json as json
+        from termcolor import colored as c
+        self.color = c
         self.json = json
         self._json_data_available = False #check if saved file has data
         self._json_file = 'all_tweets.json'
@@ -23,6 +25,7 @@ class GetData(object):
         import datetime
         import tweepy
         import tqdm as pbar
+        import requests
 
         auth = tweepy.OAuthHandler(self.__cons_key, self.__cons_secret)
         auth.set_access_token(self.__access_key, self.__access_secret)
@@ -50,15 +53,16 @@ class GetData(object):
                     with open(self._json_file, 'w') as json_data:
                         self.json.dump(status_list, json_data, indent=4)
             else:
-                print('No tweets available for the entered duration')
+                print(self.color('No tweets available for the entered duration', 'red'))
         except tweepy.TweepError as e:
-            #print(e.args[0][0]['code'])
-            if e.reason == 'Not authorized.':
+            if e.reason.startswith('Failed to send request'):
+                print(self.color('Internet connection required, please connect and try again', 'red'))
+            elif e.reason == 'Not authorized.':
                 print('You are not authorized to view this person tweets!, (protected tweets)')
             elif e.args[0][0]['code'] == 34:
-                print('Invalid twitter username, try again with a valid username')
+                print(self.color('Invalid twitter username, try again with a valid username', 'red'))
             else:
-                print('Internet connection required, please connect and try again')
+                print(self.color('Unknown Error', 'red'))
         return ''
 
     def check_json_file(self):
@@ -144,7 +148,7 @@ class GetData(object):
                 percent1 = ('{:.2f}'.format(percent))
                 tweet_table.add_row([word, value, percent1])
                 count += -1
-            print(tweet_table)
+            print(self.color(tweet_table, 'cyan'))
         else:
             print('No tweets available yet, start by fetching for tweets first')
         return ' '
@@ -165,7 +169,7 @@ class GetData(object):
             if emotion:
                 return self.emotion_graph()
         else:
-            print('No tweets available yet, start by fetching for tweets first')
+            print(self.color('No tweets available yet, start by fetching for tweets first', 'red'))
         return ' '
 
     def emotion_graph(self):
@@ -189,7 +193,7 @@ class GetData(object):
         sentiment_data = PrettyTable(['Sentiment Type', 'Score', 'if_mixed'])
         sentiment_data.add_row([sent_dict['type'], sent_dict['score'], sent_dict['mixed']])
         print('\n')
-        print(sentiment_data)
+        print(self.color(sentiment_data, 'green'))
         return
 
 def main():
