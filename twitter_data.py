@@ -153,16 +153,20 @@ class GetData(object):
         from watson_developer_cloud import AlchemyLanguageV1
         alchemyapi = AlchemyLanguageV1(api_key=self.__alchemy_key)
 
-        words_list = ' '.join(self.word_list())
-
-        self.__tweets_sentiment = alchemyapi.sentiment(text=words_list)
-        self.__tweets_emotion = alchemyapi.emotion(text=words_list)
-        if all:
-            return (self.sentiment_table(), self.emotion_graph())
-        if sentiment:
-            return self.sentiment_table()
-        if emotion:
-            return self.emotion_graph()
+        self.check_json_file()
+        if self._json_data_available:
+            words_list = ' '.join(self.word_list())
+            self.__tweets_sentiment = alchemyapi.sentiment(text=words_list)
+            self.__tweets_emotion = alchemyapi.emotion(text=words_list)
+            if all:
+                return (self.sentiment_table(), self.emotion_graph())
+            if sentiment:
+                return self.sentiment_table()
+            if emotion:
+                return self.emotion_graph()
+        else:
+            print('No tweets available yet, start by fetching for tweets first')
+        return ' '
 
     def emotion_graph(self):
         from ascii_graph import Pyasciigraph
