@@ -2,6 +2,7 @@ class GetData(object):
     def __init__(self):
         import json as json
         self.json = json
+        self._json_data_available = False #check if saved file has data
         self._json_file = 'all_tweets.json'
         self.api_file = 'api_key.json'
 
@@ -60,6 +61,21 @@ class GetData(object):
                 print('Internet connection required, please connect and try again')
         return ''
 
+    def check_json_file(self):
+        try:
+            try:
+                with open(self._json_file, 'r') as tweet_data:
+                    data = self.json.load(tweet_data)
+                if len(data[0]) > 1:
+                    self._json_data_available = True
+                else:
+                    self._json_data_available = False
+            except ValueError:
+                self._json_data_available = False
+        except IOError:
+            self._json_data_available = False
+
+
     def word_list(self):
         import json
         import re
@@ -114,19 +130,24 @@ class GetData(object):
         from operator import itemgetter
         from prettytable import PrettyTable
 
-        word_count = self.word_frequency()
-        sort = word_count.items()
-        sorted_list =(sorted(sort, key=itemgetter(1)))
-        count_sum = sum(word_count.values())
-        count = -1
-        tweet_table = PrettyTable(['Word', 'Count', 'Percent'])
-        while count > -20:
-            word, value = sorted_list[count]
-            percent = (value/count_sum)*100
-            percent1 = ('{:.2f}'.format(percent))
-            tweet_table.add_row([word, value, percent1])
-            count += -1
-        print(tweet_table)
+        self.check_json_file()
+        if self._json_data_available:
+            word_count = self.word_frequency()
+            sort = word_count.items()
+            sorted_list =(sorted(sort, key=itemgetter(1)))
+            count_sum = sum(word_count.values())
+            count = -1
+            tweet_table = PrettyTable(['Word', 'Count', 'Percent'])
+            while count > -20:
+                word, value = sorted_list[count]
+                percent = (value/count_sum)*100
+                percent1 = ('{:.2f}'.format(percent))
+                tweet_table.add_row([word, value, percent1])
+                count += -1
+            print(tweet_table)
+        else:
+            print('No tweets available yet, start by fetching for tweets first')
+        return ' '
 
     def sentiment_analysis(self, all=True, sentiment=False, emotion=False):
         from watson_developer_cloud import AlchemyLanguageV1
