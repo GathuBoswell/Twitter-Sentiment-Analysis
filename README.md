@@ -82,19 +82,19 @@
                              __/ |
                             |___/
 
-                                        The list of commands available are as below
-                                        ===========================================
+                            The list of commands available are as below
+                            ===========================================
 
 
-                                                commands                                                                Description
-                                           -----------------                                                        -------------------
-                                fetch <twitter_handle> <number_of_days_to_get_tweets_from>          Get all tweets of the entered username
-                                wordfrequency                                                       Prints word count for all words in the tweets
-                                sentiment <--all> <--docsentiment> <--emotion>                      Prints sentiment analysis with specified option
-                                help                                                                prints the docopt menu of commands
-                                home                                                                prints this menu
+                commands                                                                Description
+           -----------------                                                        -------------------
+            fetch <twitter_handle> <number_of_days_to_get_tweets_from>          Get all tweets of the entered username
+            wordfrequency                                                       Prints word count for all words in the tweets
+            sentiment <--all> <--docsentiment> <--emotion>                      Prints sentiment analysis with specified option
+            help                                                                prints the docopt menu of commands
+            home                                                                prints this menu
 
-                 Twitter Sentiment Analysis
-
-               Type help to view list of commands
+         Twitter Sentiment Analysis
+    
+       Type help to view list of commands
   ```
