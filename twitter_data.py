@@ -83,9 +83,9 @@ class GetData(object):
     def word_list(self):
         import json
         import re
-        from nltk.corpus import stopwords
+        from stop_words import get_stop_words
 
-        cachedStopWords = stopwords.words("english")
+        cachedStopWords = get_stop_words('english')
         cachedStopWords.append(')')
         cachedStopWords.append('-')
         cachedStopWords.append(',')
