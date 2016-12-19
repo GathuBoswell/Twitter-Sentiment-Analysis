@@ -6,5 +6,6 @@ install:
   - pip install coveralls
 script:
   - python twittersent_analysis_test.py
+  - coverage run twittersent_analysis_test.py
 after_success:
   coveralls
