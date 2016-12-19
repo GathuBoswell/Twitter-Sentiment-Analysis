@@ -19,34 +19,30 @@ Options:
 
 import sys
 import cmd
-import click
 from colorama import init
 from termcolor import cprint
+from termcolor import colored
 from pyfiglet import figlet_format
 from docopt import docopt, DocoptExit
 
 from twitter_data import GetData
 
-user_data = {'cons_key': "qrRMCNNtOtWlN7YPAwllY4C9p",
-             'cons_secret': "WuA5sp6Do0Q3ohcyTztBjeF0Z8fRQaNFxJQzD0HAWXJpGEA46K",
-             'access_key': "765074739228471296-eQswENirBvmzVSI3LNSf7p7E3r4L32d",
-             'access_secret': "t2SuOHDGxO8T5EzaEcoM17mu6ug65F9TGdeo8L8NnT46a"
-             }
-
-cmd_render = GetData(user_data['cons_key'],
-                     user_data['cons_secret'],
-                     user_data['access_key'],
-                     user_data['access_secret'])
+cmd_render = GetData()
+cmd_render.setup()
 
 def app_intro():
-    click.secho('=' * 75, fg='cyan')
-    click.secho('*' * 75, fg='green')
-    click.secho('=' * 75, fg='cyan')
     init(strip=not sys.stdout.isatty())  # # strip colors if stdout is redirected
     cprint(figlet_format('Twitter Sentiment Analyzer', font='big'), 'red')
-    click.secho('*' * 75, fg='cyan')
-    click.secho('=' * 75, fg='green')
-    click.secho('*' * 75, fg='cyan')
+    print(colored('					The list of commands available are as below', 'cyan'))
+    print(colored('					===========================================', 'cyan'))
+    print('\n')
+    print(colored('						commands									Description', 'cyan'))
+    print(colored('					   -----------------								    -------------------', 'cyan'))
+    print(colored('				fetch <twitter_handle> <number_of_days_to_get_tweets_from>		Get all tweets of the entered username', 'cyan'))
+    print(colored('				wordfrequency								Prints word count for all words in the tweets', 'cyan'))
+    print(colored('				sentiment <--all> <--docsentiment> <--emotion> 				Prints sentiment analysis with specified option', 'cyan'))
+    print(colored('				help									prints the docopt menu of commands', 'cyan'))
+    print(colored('				home									prints this menu', 'cyan'))
     return ''
 
 def docopt_cmd(func):
