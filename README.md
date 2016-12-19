@@ -1,5 +1,7 @@
 # Twitter-Sentiment-Analysis
 
+[![Coverage Status](https://coveralls.io/repos/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis/badge.svg?branch=master)](https://coveralls.io/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis?branch=master)
+
 ## Introduction
 *  **`Twitter Sentiment Analyser`** is a Python command line app that analyses tweets to check for sentiments and emotions.
 *  It has the following features;
