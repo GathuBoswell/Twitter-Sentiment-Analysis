@@ -113,8 +113,8 @@ class GetData(object):
 
     def word_frequency(self):
         word_count = {}
-        words = self.word_list()
-        for word in words:
+        self.words = self.word_list()
+        for word in self.words:
             try:
                 word = int(word)
                 try:
