@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/GathuBoswell/bc-12-Twitter-Sentiment-Analysis.svg?branch=master)](https://travis-ci.org/GathuBoswell/bc-12-Twitter-Sentiment-Analysis)
 [![Coverage Status](https://coveralls.io/repos/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis/badge.svg?branch=master)](https://coveralls.io/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis?branch=master)
+[![Code Climate](https://codeclimate.com/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis/badges/gpa.svg)](https://codeclimate.com/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis)
+[![Issue Count](https://codeclimate.com/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis/badges/issue_count.svg)](https://codeclimate.com/github/GathuBoswell/bc-12-Twitter-Sentiment-Analysis)
 
 ## Introduction
 *  **`Twitter Sentiment Analyser`** is a Python command line app that analyses tweets to check for sentiments and emotions.
