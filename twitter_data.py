@@ -22,10 +22,10 @@ class GetData(object):
                   'Please run: python api_setup.py to set that data')
 
     def get_tweets(self, twitter_username, duration=7):
-        import datetime
-        import tweepy
-        import tqdm as pbar
-        import requests
+        import datetime, tweepy, requests, tqdm as pbar
+        # import tweepy
+        # import tqdm as pbar
+        # import requests
 
         auth = tweepy.OAuthHandler(self.__cons_key, self.__cons_secret)
         auth.set_access_token(self.__access_key, self.__access_secret)
